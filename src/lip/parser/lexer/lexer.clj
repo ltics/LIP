@@ -25,16 +25,9 @@
 
 (consume {:char \space, :point 7, :input "[abc, b ]"})
 
-;;(consume (init "hehe 333"))
-
 (defn match
   [x lex-map]
   (let [char (:char lex-map)]
     (if (= x char)
       (consume lex-map)
       (throw (Error. (str "expecting " x "; found " char))))))
-
-;(comment
-;  (defprotocol Lexer
-;    (next-token [this lex-map])
-;    (get-token-name [this token-type lex-map])))
