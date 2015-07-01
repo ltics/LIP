@@ -28,7 +28,7 @@
 
 (defn is-whitespace
   [c]
-  (some #(= c %) whitespaces))
+  (if (some #(= c %) whitespaces) true false))
 
 (defn is-letter
   [lex-map]
@@ -49,17 +49,12 @@
     {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 
-(get-nameseq {:char \h, :point 0, :input "hehe 333"})
-(get-nameseq {:char \a, :point 1, :input "[a, b ]"})
-
 (defn ignore-whitespace
   [lex-map]
   (let [lex-map-atom (atom lex-map)]
     (while (is-whitespace (:char @lex-map-atom))
       (reset! lex-map-atom (consume @lex-map-atom)))
     @lex-map-atom))
-
-(ignore-whitespace {:char \space, :point 0, :input "    333"})
 
 (defn next-token
   [lex-map]
@@ -81,15 +76,3 @@
             (throw (Error. (str "invalid character: " (:char lex-map)))))))
       {:token   (->ListToken EOF_TYPE "<EOF>")
        :lex-map lex-map})))
-
-(next-token {:char \[, :point 0, :input "[a, b ]"})
-(next-token {:char \a, :point 1, :input "[a, b ]"})
-
-(next-token (:lex-map (next-token (:lex-map (next-token (:lex-map (next-token (:lex-map (next-token (init "[abc, b ]"))))))))))
-
-(next-token {:char \space, :point 7, :input "[abc, b ]"})
-
-(is-letter {:char \a, :point 1, :input "[a, b ]"})
-(get-nameseq {:char \a, :point 1, :input "[abc, b ]"})
-
-(is-whitespace \a)
