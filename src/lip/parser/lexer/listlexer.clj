@@ -79,3 +79,18 @@
             (throw (Error. (str "invalid character: " (:char lex-map)))))))
       {:token   (->ListToken EOF_TYPE "<EOF>")
        :lex-map lex-map})))
+
+(defn parse-list-elem
+  [elem]
+  (let [result-map (next-token elem)
+        token (:token result-map)]
+    (if (not= (:type token) EOF_TYPE)
+      (do
+        (prn (to-string token))
+        (recur (:lex-map result-map)))
+      (prn (to-string token)))))
+
+(defn parse-list
+  [input]
+  (let [lexer (init-lexer input)]
+    (parse-list-elem lexer)))

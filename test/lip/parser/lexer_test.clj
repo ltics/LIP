@@ -5,7 +5,7 @@
 
 (deftest lexer
   (testing "cosume character"
-    (is (consume (init "hehe 333")) {:char \h :point 0 :input "hehe 333"})))
+    (is (consume (init-lexer "hehe 333")) {:char \h :point 0 :input "hehe 333"})))
 
 (deftest listlexer
   (testing "get-nameseq"
@@ -33,12 +33,15 @@
     (is (= (next-token {:char \a, :point 1, :input "[a, b ]"})
            {:token   (->ListToken NAME "a")
             :lex-map {:char \,, :point 2, :input "[a, b ]"}}))
-    (is (= (next-token (next-token (next-token (next-token (next-token (init "[abc, b ]"))))))
+    (is (= (next-token (next-token (next-token (next-token (next-token (init-lexer "[abc, b ]"))))))
            {:token   (->ListToken RBRACK "]")
             :lex-map {:char :EOF, :point 9, :input "[abc, b ]"}}))
     (is (= (next-token {:char \space, :point 7, :input "[abc, b ]"})
            {:token   (->ListToken RBRACK "]")
-            :lex-map {:char :EOF, :point 9, :input "[abc, b ]"}}))))
+            :lex-map {:char :EOF, :point 9, :input "[abc, b ]"}})))
+  (testing "parse list input"
+    (parse-list "[a, b ]")
+    (parse-list "[aaa, [bbb, ccc], ddd, mememe]")))
 
 
 

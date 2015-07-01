@@ -9,7 +9,7 @@
    :point point
    :input input})
 
-(defn init
+(defn init-lexer
   [input]
   (let [point 0
         char (.charAt input 0)]
