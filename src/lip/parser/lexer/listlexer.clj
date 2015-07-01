@@ -56,6 +56,7 @@
       (reset! lex-map-atom (consume @lex-map-atom)))
     @lex-map-atom))
 
+;;这个函数或许可以试试用monad进行简化
 (defn next-token
   [lex-elem]
   (let [lex-map (if (contains? lex-elem :lex-map)
