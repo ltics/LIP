@@ -57,8 +57,11 @@
     @lex-map-atom))
 
 (defn next-token
-  [lex-map]
-  (let [char (:char lex-map)
+  [lex-elem]
+  (let [lex-map (if (contains? lex-elem :lex-map)
+                  (:lex-map lex-elem)
+                  lex-elem)
+        char (:char lex-map)
         get-token (fn [lex-map index strflag]
                     (let [new-lex-map (consume lex-map)]
                       {:token   (->ListToken index strflag)

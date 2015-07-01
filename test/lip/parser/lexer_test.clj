@@ -33,7 +33,7 @@
     (is (= (next-token {:char \a, :point 1, :input "[a, b ]"})
            {:token   (->ListToken NAME "a")
             :lex-map {:char \,, :point 2, :input "[a, b ]"}}))
-    (is (= (next-token (:lex-map (next-token (:lex-map (next-token (:lex-map (next-token (:lex-map (next-token (init "[abc, b ]"))))))))))
+    (is (= (next-token (next-token (next-token (next-token (next-token (init "[abc, b ]"))))))
            {:token   (->ListToken RBRACK "]")
             :lex-map {:char :EOF, :point 9, :input "[abc, b ]"}}))
     (is (= (next-token {:char \space, :point 7, :input "[abc, b ]"})
