@@ -1,6 +1,6 @@
-(ns lip.parser.lexer-test
-  (:use [lip.parser.lexer.lexer]
-        [lip.parser.lexer.listlexer])
+(ns lip.parsing.recursive-descent.lexer-test
+  (:use [lip.parsing.recursive-descent.lexer.lexer]
+        [lip.parsing.recursive-descent.lexer.listlexer])
   (:require [clojure.test :refer :all]))
 
 (deftest lexer

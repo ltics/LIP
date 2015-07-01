@@ -1,7 +1,7 @@
-(ns lip.parser.lexer.listlexer
-  (:use [lip.parser.lexer.lexer]
-        [lip.parser.lexer.token]
-        [lip.parser.lexer.cota]))
+(ns lip.parsing.recursive-descent.lexer.listlexer
+  (:use [lip.parsing.recursive-descent.lexer.lexer]
+        [lip.parsing.recursive-descent.lexer.token]
+        [lip.parsing.recursive-descent.lexer.cota]))
 
 (def NAME 2)
 (def COMMA 3)

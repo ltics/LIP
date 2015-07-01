@@ -1,4 +1,4 @@
-(ns lip.parser.lexer.lexer)
+(ns lip.parsing.recursive-descent.lexer.lexer)
 
 (def EOF :EOF)
 (def EOF_TYPE 1)
