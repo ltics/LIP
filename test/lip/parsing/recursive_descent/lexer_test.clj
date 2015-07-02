@@ -27,7 +27,7 @@
     (is (= (ignore-whitespace {:char \space, :point 0, :input "    333"})
            {:char \3, :point 4, :input "    333"})))
   (testing "get next token"
-    (let [lexer (->ListLexer nil (init-lexer "[a, b ]"))]
+    (let [lexer (construct-listlexer "[a, b ]")]
       (is (= (next-token lexer)
              (->ListLexer (->ListToken LBRACK "[")
                           {:char \a, :point 1, :input "[a, b ]"})))
@@ -38,6 +38,6 @@
              (->ListLexer (->ListToken COMMA ",")
                           {:char \space, :point 3, :input "[a, b ]"})))))
   (testing "parse list input"
-    (parse-list "[a, b ]")
+    (lexer-list "[a, b ]")
     (prn (clojure.string/join (repeat 15 "-")))
-    (parse-list "[aaa, [bbb, ccc], ddd, mememe]")))
+    (lexer-list "[aaa, [bbb, ccc], ddd, mememe]")))

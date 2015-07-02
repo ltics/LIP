@@ -46,7 +46,7 @@
       (is-letter @lex-map-atom)
       (.append buf (:char @lex-map-atom))
       (reset! lex-map-atom (consume @lex-map-atom)))
-    {:token (->ListToken NAME (.toString buf))
+    {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 
 (defn ignore-whitespace
@@ -83,7 +83,11 @@
   (get-token-name [_ token-type]
     (get tokenmap token-type)))
 
-(defn parse-list-elem
+(defn construct-listlexer
+  [input]
+  (->ListLexer nil (init-lexer input)))
+
+(defn lexer-list-elem
   [lexer]
   (let [next-lexer (next-token lexer)
         token (:token next-lexer)]
@@ -93,7 +97,7 @@
         (recur next-lexer))
       (prn (to-string token)))))
 
-(defn parse-list
+(defn lexer-list
   [input]
-  (let [lexer (->ListLexer nil (init-lexer input))]
-    (parse-list-elem lexer)))
+  (let [lexer (construct-listlexer input)]
+    (lexer-list-elem lexer)))
