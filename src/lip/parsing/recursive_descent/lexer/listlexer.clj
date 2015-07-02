@@ -46,7 +46,7 @@
       (is-letter @lex-map-atom)
       (.append buf (:char @lex-map-atom))
       (reset! lex-map-atom (consume @lex-map-atom)))
-    {:token   (->ListToken NAME (.toString buf))
+    {:token (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 
 (defn ignore-whitespace
@@ -56,46 +56,44 @@
       (reset! lex-map-atom (consume @lex-map-atom)))
     @lex-map-atom))
 
-(defrecord ListLexer []
+(defrecord ListLexer [token lex-map]
   Lexer
   ;;这个函数或许可以试试用monad进行简化
-  (next-token [this lex-elem]
-    (let [lex-map (if (contains? lex-elem :lex-map)
-                    (:lex-map lex-elem)
-                    lex-elem)
+  (next-token [lexer]
+    (let [lex-map (:lex-map lexer)
           char (:char lex-map)
           get-token (fn [lex-map index strflag]
                       (let [new-lex-map (consume lex-map)]
-                        {:token   (->ListToken index strflag)
-                         :lex-map new-lex-map}))]
+                        (->ListLexer (->ListToken index strflag)
+                                     new-lex-map)))]
       (if (not= char EOF)
         (if (is-whitespace char)
           (let [new-lex-map (ignore-whitespace lex-map)]
-            (next-token this new-lex-map))
+            (next-token (->ListLexer (:token lexer) new-lex-map)))
           (condp = char
             \, (get-token lex-map COMMA ",")
             \[ (get-token lex-map LBRACK "[")
             \] (get-token lex-map RBRACK "]")
             (if (is-letter lex-map)
-              (get-nameseq lex-map)
+              (let [name-map (get-nameseq lex-map)]
+                (->ListLexer (:token name-map) (:lex-map name-map)))
               (throw (Error. (str "invalid character: " (:char lex-map)))))))
-        {:token   (->ListToken EOF_TYPE "<EOF>")
-         :lex-map lex-map})))
+        (->ListLexer (->ListToken EOF_TYPE "<EOF>")
+                     lex-map))))
   (get-token-name [_ token-type]
     (get tokenmap token-type)))
 
 (defn parse-list-elem
-  [lexer elem]
-  (let [result-map (next-token lexer elem)
-        token (:token result-map)]
+  [lexer]
+  (let [next-lexer (next-token lexer)
+        token (:token next-lexer)]
     (if (not= (:type token) EOF_TYPE)
       (do
         (prn (to-string token))
-        (recur lexer (:lex-map result-map)))
+        (recur next-lexer))
       (prn (to-string token)))))
 
 (defn parse-list
   [input]
-  (let [lexer (->ListLexer)
-        init (init-lexer input)]
-    (parse-list-elem lexer init)))
+  (let [lexer (->ListLexer nil (init-lexer input))]
+    (parse-list-elem lexer)))

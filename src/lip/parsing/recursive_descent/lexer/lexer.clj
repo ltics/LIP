@@ -33,5 +33,5 @@
       (throw (Error. (str "expecting " x "; found " char))))))
 
 (defprotocol Lexer
-  (next-token [this lex-elem])
-  (get-token-name [this token-type]))
+  (next-token [lexer])
+  (get-token-name [lexer token-type]))
