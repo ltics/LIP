@@ -31,3 +31,7 @@
     (if (= x char)
       (consume lex-map)
       (throw (Error. (str "expecting " x "; found " char))))))
+
+(defprotocol Lexer
+  (next-token [this lex-elem])
+  (get-token-name [this token-type]))
