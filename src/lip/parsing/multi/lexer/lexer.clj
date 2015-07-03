@@ -1,4 +1,4 @@
-(ns lip.parsing.recursive-descent.lexer.lexer)
+(ns lip.parsing.multi.lexer.lexer)
 
 (def EOF :EOF)
 (def EOF_TYPE 1)
@@ -22,6 +22,12 @@
                EOF
                (.charAt input point))]
     (get-lex-map char point input)))
+
+(consume {:char \space, :point 7, :input "[abc, b ]"})
+
+(defn advance
+  []
+  )
 
 (defn match
   [x lex-map]

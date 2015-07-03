@@ -5,7 +5,10 @@
 
 (deftest lexer
   (testing "cosume character"
-    (is (consume (init-lexer "hehe 333")) {:char \h :point 0 :input "hehe 333"})))
+    (is (= (consume (init-lexer "hehe 333"))
+           {:char \e, :point 1, :input "hehe 333"}))
+    (is (= (consume {:char \space, :point 7, :input "[abc, b ]"})
+           {:char \], :point 8, :input "[abc, b ]"}))))
 
 (deftest listlexer
   (testing "get-nameseq"
