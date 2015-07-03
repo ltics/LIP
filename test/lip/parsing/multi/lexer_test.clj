@@ -28,17 +28,19 @@
     (is (= (ignore-whitespace {:char \space, :point 0, :input "    333"})
            {:char \3, :point 4, :input "    333"})))
   (testing "get next token"
-    (let [lexer (construct-listlexer "[a, b ]")]
+    (let [lexer (construct-lookaheadlexer "[a, b ]")]
       (is (= (next-token lexer)
-             (->ListLexer (->ListToken LBRACK "[")
-                          {:char \a, :point 1, :input "[a, b ]"})))
+             (->LookaheadLexer (->ListToken LBRACK "[")
+                               {:char \a, :point 1, :input "[a, b ]"})))
       (is (= (next-token (next-token lexer))
-             (->ListLexer (->ListToken NAME "a")
-                          {:char \,, :point 2, :input "[a, b ]"})))
+             (->LookaheadLexer (->ListToken NAME "a")
+                               {:char \,, :point 2, :input "[a, b ]"})))
       (is (= (next-token (next-token (next-token lexer)))
-             (->ListLexer (->ListToken COMMA ",")
-                          {:char \b, :point 4, :input "[a, b ]"})))))
+             (->LookaheadLexer (->ListToken COMMA ",")
+                               {:char \b, :point 4, :input "[a, b ]"})))))
   (testing "parse list input"
     (lexer-list "[a, b=c, [d, e]]")
     (prn (clojure.string/join (repeat 15 "-")))
-    (lexer-list "[aaa, [bbb, ccc], ddd, mememe]")))
+    (lexer-list "[aaa, [bbb, ccc], ddd, mememe]")
+    (prn (clojure.string/join (repeat 15 "-")))
+    (lexer-list "[a,b=c,[d,e]]")))

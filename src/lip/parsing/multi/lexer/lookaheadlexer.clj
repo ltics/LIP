@@ -63,7 +63,7 @@
     {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 
-(defrecord ListLexer [token lex-map]
+(defrecord LookaheadLexer [token lex-map]
   Lexer
   ;;这个函数或许可以试试用monad进行简化
   (next-token [lexer]
@@ -71,12 +71,12 @@
           char (:char lex-map)
           get-token (fn [lex-map index strflag]
                       (let [new-lex-map (consume lex-map ignore-whitespace)]
-                        (->ListLexer (->ListToken index strflag)
-                                     new-lex-map)))]
+                        (->LookaheadLexer (->ListToken index strflag)
+                                          new-lex-map)))]
       (if (not= char EOF)
         (if (is-whitespace char)
           (let [new-lex-map (ignore-whitespace lex-map)]
-            (next-token (->ListLexer (:token lexer) new-lex-map)))
+            (next-token (->LookaheadLexer (:token lexer) new-lex-map)))
           (condp = char
             \, (get-token lex-map COMMA ",")
             \[ (get-token lex-map LBRACK "[")
@@ -84,16 +84,16 @@
             \= (get-token lex-map EQUALS "=")
             (if (is-letter lex-map)
               (let [name-map (get-nameseq lex-map)]
-                (->ListLexer (:token name-map) (:lex-map name-map)))
+                (->LookaheadLexer (:token name-map) (:lex-map name-map)))
               (throw (Error. (str "invalid character: " (:char lex-map)))))))
-        (->ListLexer (->ListToken EOF_TYPE "<EOF>")
-                     lex-map))))
+        (->LookaheadLexer (->ListToken EOF_TYPE "<EOF>")
+                          lex-map))))
   (get-token-name [_ token-type]
     (get tokenmap token-type)))
 
-(defn construct-listlexer
+(defn construct-lookaheadlexer
   [input]
-  (->ListLexer nil (init-lexer input)))
+  (->LookaheadLexer nil (init-lexer input)))
 
 (defn lexer-list-elem
   [lexer]
@@ -107,11 +107,5 @@
 
 (defn lexer-list
   [input]
-  (let [lexer (construct-listlexer input)]
+  (let [lexer (construct-lookaheadlexer input)]
     (lexer-list-elem lexer)))
-
-(get-nameseq {:char \h, :point 0, :input "hehe 333"})
-(get-nameseq {:char \a, :point 1, :input "[a, b ]"})
-
-(let [lexer (construct-listlexer "[a, b ]")]
-  (next-token (next-token (next-token lexer))))
