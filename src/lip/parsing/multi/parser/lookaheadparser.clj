@@ -47,7 +47,8 @@
   (let [result (init-parser-map lexer k 0 (vec (range k)))]
     (->LookaheadParser (:input result) (:parse-map result))))
 
-(let [lexer (construct-lookaheadlexer "[a,b=c,,[d,e]]")
-      parser (construct-lookaheadparser lexer 2)]
-  (parse-elements (match-list parser LBRACK)))
-
+(comment
+  ;;CompilerException java.lang.Error: expecting name or list; found , c
+  (let [lexer (construct-lookaheadlexer "[a,b=c,,[d,e]]")
+        parser (construct-lookaheadparser lexer 2)]
+    (parse-list parser)))

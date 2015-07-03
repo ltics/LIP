@@ -20,8 +20,7 @@
                     :parse-map (get-parse-map k point lookahead)}]
     (if (<= k 0)
       parse-map
-      (do (prn parse-map)
-          (recur (dec k) (consume parse-map))))))
+      (recur (dec k) (consume parse-map)))))
 
 (defn LT
   [{:keys [index] {:keys [k point lookahead]} :parse-map}]
