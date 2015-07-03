@@ -43,8 +43,14 @@
   [lex-map]
   (let [lex-map-atom (atom lex-map)]
     (while (is-whitespace (:char @lex-map-atom))
-      (reset! lex-map-atom (consume @lex-map-atom ignore-whitespace)))
+      (reset! lex-map-atom (advance @lex-map-atom)))
     @lex-map-atom))
+
+(defn letter
+  [lex-map]
+  (if (is-letter lex-map)
+    (consume lex-map ignore-whitespace)
+    (throw (Error. (str "expecting LETTER; found " (:char lex-map))))))
 
 (defn get-nameseq
   [lex-map]
@@ -53,7 +59,7 @@
     (do-while
       (is-letter @lex-map-atom)
       (.append buf (:char @lex-map-atom))
-      (reset! lex-map-atom (consume @lex-map-atom ignore-whitespace)))
+      (reset! lex-map-atom (letter @lex-map-atom)))
     {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 
@@ -75,6 +81,7 @@
             \, (get-token lex-map COMMA ",")
             \[ (get-token lex-map LBRACK "[")
             \] (get-token lex-map RBRACK "]")
+            \= (get-token lex-map EQUALS "=")
             (if (is-letter lex-map)
               (let [name-map (get-nameseq lex-map)]
                 (->ListLexer (:token name-map) (:lex-map name-map)))
@@ -102,3 +109,9 @@
   [input]
   (let [lexer (construct-listlexer input)]
     (lexer-list-elem lexer)))
+
+(get-nameseq {:char \h, :point 0, :input "hehe 333"})
+(get-nameseq {:char \a, :point 1, :input "[a, b ]"})
+
+(let [lexer (construct-listlexer "[a, b ]")]
+  (next-token (next-token (next-token lexer))))

@@ -38,6 +38,12 @@
         (and (>= digit (int \A))
              (<= digit (int \Z))))))
 
+(defn letter
+  [lex-map]
+  (if (is-letter lex-map)
+    (consume lex-map)
+    (throw (Error. (str "expecting LETTER; found " (:char lex-map))))))
+
 (defn get-nameseq
   [lex-map]
   (let [buf (StringBuilder.)
@@ -45,7 +51,7 @@
     (do-while
       (is-letter @lex-map-atom)
       (.append buf (:char @lex-map-atom))
-      (reset! lex-map-atom (consume @lex-map-atom)))
+      (reset! lex-map-atom (letter @lex-map-atom)))
     {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
 

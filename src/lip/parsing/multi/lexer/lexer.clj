@@ -15,6 +15,7 @@
         char (.charAt input 0)]
     (get-lex-map char point input)))
 
+;;advance就是recursive_descent中的consume
 (defn advance
   [{:keys [_ point input]}]
   (let [point (inc point)
