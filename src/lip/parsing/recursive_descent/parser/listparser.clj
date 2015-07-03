@@ -1,6 +1,6 @@
 (ns lip.parsing.recursive-descent.parser.listparser
   (:use [lip.parsing.recursive-descent.parser.parser]
-        [lip.parsing.recursive-descent.lexer.token]
+        [lip.parsing.token]
         [lip.parsing.recursive-descent.lexer.lexer :exclude [match consume]]
         [lip.parsing.recursive-descent.lexer.listlexer]))
 

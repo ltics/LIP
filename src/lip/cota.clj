@@ -1,4 +1,4 @@
-(ns lip.parsing.recursive-descent.lexer.cota)
+(ns lip.cota)
 
 (defmacro do-while
   [test & body]

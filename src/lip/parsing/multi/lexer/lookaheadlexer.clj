@@ -1,5 +1,5 @@
-(ns lip.parsing.recursive-descent.lexer.listlexer
-  (:use [lip.parsing.recursive-descent.lexer.lexer]
+(ns lip.parsing.multi.lexer.lookaheadlexer
+  (:use [lip.parsing.multi.lexer.lexer]
         [lip.parsing.token]
         [lip.cota]))
 
@@ -7,9 +7,10 @@
 (def COMMA 3)
 (def LBRACK 4)
 (def RBRACK 5)
+(def EQUALS 6)
 
 (def tokenmap
-  (let [tokennames ["n/a" "<EOF>" "NAME" "COMMA" "LBRACK" "RBRACK"]]
+  (let [tokennames ["n/a" "<EOF>" "NAME" "," "[" "]" "="]]
     (into {} (map vector (vec (range (count tokennames))) tokennames))))
 
 (defrecord ListToken [type text]
@@ -38,6 +39,13 @@
         (and (>= digit (int \A))
              (<= digit (int \Z))))))
 
+(defn ignore-whitespace
+  [lex-map]
+  (let [lex-map-atom (atom lex-map)]
+    (while (is-whitespace (:char @lex-map-atom))
+      (reset! lex-map-atom (consume @lex-map-atom ignore-whitespace)))
+    @lex-map-atom))
+
 (defn get-nameseq
   [lex-map]
   (let [buf (StringBuilder.)
@@ -45,16 +53,9 @@
     (do-while
       (is-letter @lex-map-atom)
       (.append buf (:char @lex-map-atom))
-      (reset! lex-map-atom (consume @lex-map-atom)))
+      (reset! lex-map-atom (consume @lex-map-atom ignore-whitespace)))
     {:token   (->ListToken NAME (.toString buf))
      :lex-map @lex-map-atom}))
-
-(defn ignore-whitespace
-  [lex-map]
-  (let [lex-map-atom (atom lex-map)]
-    (while (is-whitespace (:char @lex-map-atom))
-      (reset! lex-map-atom (consume @lex-map-atom)))
-    @lex-map-atom))
 
 (defrecord ListLexer [token lex-map]
   Lexer
@@ -63,7 +64,7 @@
     (let [lex-map (:lex-map lexer)
           char (:char lex-map)
           get-token (fn [lex-map index strflag]
-                      (let [new-lex-map (consume lex-map)]
+                      (let [new-lex-map (consume lex-map ignore-whitespace)]
                         (->ListLexer (->ListToken index strflag)
                                      new-lex-map)))]
       (if (not= char EOF)

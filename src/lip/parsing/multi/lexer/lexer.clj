@@ -15,7 +15,7 @@
         char (.charAt input 0)]
     (get-lex-map char point input)))
 
-(defn consume
+(defn advance
   [{:keys [_ point input]}]
   (let [point (inc point)
         char (if (>= point (count input))
@@ -23,17 +23,15 @@
                (.charAt input point))]
     (get-lex-map char point input)))
 
-(consume {:char \space, :point 7, :input "[abc, b ]"})
-
-(defn advance
-  []
-  )
+(defn consume
+  [lex-map ws]
+  (ws (advance lex-map)))
 
 (defn match
-  [x lex-map]
+  [x lex-map ws]
   (let [char (:char lex-map)]
     (if (= x char)
-      (consume lex-map)
+      (consume lex-map ws)
       (throw (Error. (str "expecting " x "; found " char))))))
 
 (defprotocol Lexer
